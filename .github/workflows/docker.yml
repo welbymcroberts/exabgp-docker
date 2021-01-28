@@ -1,0 +1,23 @@
+name: Docker Image
+
+on:
+  schedule:
+    - cron: '09 1 * * *'
+  push:
+    branches: [ main ]
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Build docker image and push to Github
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/exabgp
+          tag_with_sha: true
+          tag_with_ref: true
