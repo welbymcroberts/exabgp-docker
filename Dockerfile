@@ -13,3 +13,4 @@ RUN mkfifo /run/exabgp.in && \
 USER exabgp
 CMD [ "exabgp" ]
 ENTRYPOINT [ "/entrypoint.sh" ]
+
