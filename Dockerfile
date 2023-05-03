@@ -15,5 +15,3 @@ ENV PYTHONUNBUFFERED=1
 USER exabgp
 CMD [ "exabgp" ]
 ENTRYPOINT [ "/entrypoint.sh" ]
-
-
