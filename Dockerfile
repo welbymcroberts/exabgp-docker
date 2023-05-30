@@ -5,6 +5,7 @@ RUN git clone https://github.com/Exa-Networks/exabgp/ && cd exabgp/ && git check
 RUN cd exabgp && pip install .
 RUN pip install requests
 COPY entrypoint.sh /entrypoint.sh
+COPY healthcheck.py /healthcheck.py
 RUN mkfifo /run/exabgp.in && \
     mkfifo /run/exabgp.out && \
     chown exabgp:exabgp /run/exabgp.in && \
