@@ -14,19 +14,24 @@ def do_check(method="GET",
              url="http://127.0.0.1/",
              timeout=1.0,
              ssl_check=True,
-             payload=None
+             payload=None,
+             username=None,
+             password=None
              ):
   r = None
 
   log(url, "Starting request for {} with method {}. Timeout {}, Check SSL: {}".format(url, method, timeout, ssl_check))
+  auth = None
+  if username and password:
+      auth = requests.auth.HTTPBasicAuth(username, password)
   try:
     # Make request
     if method.upper() == "GET":
-      r = requests.get(url, timeout=timeout, verify=ssl_check)
+      r = requests.get(url, timeout=timeout, verify=ssl_check, auth=auth)
     if method.upper() == "POST":
-      r = requests.post(url, timeout=timeout, verify=ssl_check, data=payload)
+      r = requests.post(url, timeout=timeout, verify=ssl_check, data=payload, auth=auth)
     if method.upper() == "HEAD":
-      r = requests.head(url, timeout=timeout, verify=ssl_check)
+      r = requests.head(url, timeout=timeout, verify=ssl_check, auth=auth)
   except requests.exceptions.ConnectTimeout:
     log(url, "Request timeout")
   except requests.exceptions.RequestException:
@@ -55,6 +60,9 @@ if __name__ == '__main__':
   parser.add_argument("-c", "--count", help="Number of times check passes or fails before announce/withdrawl. Defaults to 2.", default=2, type=int)
   parser.add_argument('-x', "--ssl-no-verify", help="Disable SSL checks", action="store_false")
   parser.add_argument('-p', "--payload", help="Payload if method is a POST")
+  parser.add_argument('-U', "--username", help="Username")
+  parser.add_argument('-P', "--password", help="Password")
+
 
   # Parse command line args
   args = parser.parse_args()
@@ -63,7 +71,7 @@ if __name__ == '__main__':
   # Start loop
   while True:
     # Do a request
-    r = do_check(args.method, args.url, args.timeout, args.ssl_no_verify, args.payload)
+    r = do_check(args.method, args.url, args.timeout, args.ssl_no_verify, args.payload, args.username, args.password)
     check_pass = False
     if isinstance(r, requests.Response):
       # is status the correct status
