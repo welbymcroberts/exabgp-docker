@@ -6,8 +6,8 @@ import argparse
 from time import sleep
 
 
-def log(message):
-  sys.stderr.write(message + "\n")
+def log(prefix, message):
+  sys.stderr.write("[{}] {}".format(prefix,message) + "\n")
 
 
 def do_check(method="GET",
@@ -18,7 +18,7 @@ def do_check(method="GET",
              ):
   r = None
 
-  log("Starting request for {} with method {}. Timeout {}, Check SSL: {}".format(url, method, timeout, ssl_check))
+  log(url, "Starting request for {} with method {}. Timeout {}, Check SSL: {}".format(url, method, timeout, ssl_check))
   try:
     # Make request
     if method.upper() == "GET":
@@ -28,19 +28,19 @@ def do_check(method="GET",
     if method.upper() == "HEAD":
       r = requests.head(url, timeout=timeout, verify=ssl_check)
   except requests.exceptions.ConnectTimeout:
-    log("Request timeout")
+    log(url, "Request timeout")
   except requests.exceptions.RequestException:
-    log("Request failed with unknown exception")
+    log(url, "Request failed with unknown exception")
   if isinstance(r, requests.Response):
-    log("Request completed with code {}".format(r.status_code))
+    log(url, "Request completed with code {}".format(r.status_code))
   return r
 
 def announce(ip):
-  log("Announcing {}".format(ip))
+  log("BGP", "Announcing {}".format(ip))
   sys.stdout.write("announce route {} next-hop self".format(ip) + '\n')
 
 def withdraw(ip):
-  log("Withdrawing {}".format(ip))
+  log("BGP", "Withdrawing {}".format(ip))
   sys.stdout.write("withdraw route {} next-hop self".format(ip) + '\n')
 
 if __name__ == '__main__':
@@ -69,9 +69,9 @@ if __name__ == '__main__':
       # is status the correct status
       if args.status == r.status_code:
         check_pass = True
-        log("Response code matches")
+        log(args.url, "Response code matches")
       else:
-        log("Response code does not match")
+        log(args.url, "Response code does not match")
 
     if check_pass:
       # If counter is >1
