@@ -13,6 +13,7 @@ RUN mkfifo /run/exabgp.in && \
     chmod 600 /run/exabgp.in && \
     chmod 600 /run/exabgp.out
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONWARNINGS="ignore:Unverified HTTPS request"
 USER exabgp
 CMD [ "exabgp" ]
 ENTRYPOINT [ "/entrypoint.sh" ]
