@@ -20,7 +20,7 @@ def do_check(method="GET",
              ):
   r = None
 
-  log(url, "Starting request for {} with method {}. Timeout {}, Check SSL: {}".format(url, method, timeout, ssl_check))
+  log(url, "Starting Request - method {}. Timeout {}, Check SSL: {}".format(method, timeout, ssl_check))
   auth = None
   if username and password:
       auth = requests.auth.HTTPBasicAuth(username, password)
@@ -36,8 +36,8 @@ def do_check(method="GET",
     log(url, "Request timeout")
   except requests.exceptions.RequestException:
     log(url, "Request failed with unknown exception")
-  if isinstance(r, requests.Response):
-    log(url, "Request completed with code {}".format(r.status_code))
+  #if isinstance(r, requests.Response):
+  #  log(url, "Request completed with code {}".format(r.status_code))
   return r
 
 def announce(ip):
@@ -77,9 +77,9 @@ if __name__ == '__main__':
       # is status the correct status
       if args.status == r.status_code:
         check_pass = True
-        log(args.url, "Response code matches")
+        log(args.url, "Response code matches - Recv {} = {}".format(r.status_code, args.status))
       else:
-        log(args.url, "Response code does not match")
+        log(args.url, "Response code does not match - Recv {} = {}".format(r.status_code, args.status))
 
     if check_pass:
       # If counter is >1
@@ -89,18 +89,22 @@ if __name__ == '__main__':
       else:
         # set to 1
         counter = 1
+        log(args.url, "Entered passing state")
       # announce if the counter = count, dont renanoucne every check
       if counter == args.count:
+        log(args.url, "Passing >= {} times. Annoucning".format(args.count))
         announce(args.ip)
     else:
       # If counter is >1
-      if counter <= 0:
+      if counter <= -1:
         counter = counter-1
       else:
         # set to 1
         counter = -1
+        log(args.url, "Entered failing state")
       # announce if the counter = count, dont renanoucne every check
       if counter == args.count * -1:
+        log(args.url, "Failing >= {} times. Withdrawing".format(args.count))
         withdraw(args.ip)
     # Sleep until next check
     sleep(args.every)
